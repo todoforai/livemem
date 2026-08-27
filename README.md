@@ -4,9 +4,8 @@
 then pack the most relevant ones into a fixed token budget at question time — pure math,
 no LLM call on the retrieval path.
 
-**[95.0% on LoCoMo](#locomo--best-published-result-were-aware-of)** (1540q, graded by
-Mem0's own judge and prompt) — the best published result we're aware of, at ~5k context
-tokens per question.
+**[92.4% on LoCoMo](#locomo)** (1540q, single pass, ~5k context tokens per question) —
+graded by our own deliberately strict judge.
 
 ```
 conversations ──extract──▶ dated facts + embeddings ──pack──▶ ≤ N-token memory block
@@ -27,18 +26,14 @@ Our runs use the [AMB harness](https://github.com/vectorize-io/agent-memory-benc
 — an independent runner that fixes the dataset, answerer and judge across providers.
 Raw per-question outputs for our rows: [`bench/results/`](bench/results/).
 
-### LoCoMo — best published result we're aware of
+### LoCoMo
 
-**95.0% on all 1540 questions**, above every published number we could find, and — the
-part that makes it checkable — graded by **Mem0's own judge**: `gpt-4o-mini` at
-temperature 0 running Mem0's `ACCURACY_PROMPT` from their memory-benchmarks repo. On that
-same judge, Mem0-graph is published at 68.4%.
+**92.4% on all 1540 questions**, single pass, ~5k context tokens — graded by our own
+judge, which we chose to be strict rather than flattering.
 
 | System | Acc. | Answerer / judge | Source |
 |---|---|---|---|
-| **livemem ensemble** | **95.0%** | flash/haiku 2-run vote / **gpt-4o-mini, Mem0's prompt** | [`bench/`](bench/results/locomo-1540q/ensemble-vote2/) |
-| **livemem ensemble** (same answers, our judge) | 94.7% | flash/haiku 2-run vote / flash-lite | same dir, `flash_lite_judge_was` |
-| **livemem single-pass** | **92.4%** | gemini-flash / flash-lite | [`bench/`](bench/results/locomo-1540q/single-pass/) |
+| **livemem** (single pass) | **92.4%** | gemini-flash / flash-lite | [`bench/`](bench/results/locomo-1540q/single-pass/) |
 | MemMachine v0.2 | 91.7% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
 | Honcho | 89.9% | per blog | Plastic Labs |
 | MemMachine | 84.9% | per blog | MemMachine blog (Sep 2025) |
@@ -49,21 +44,22 @@ same judge, Mem0-graph is published at 68.4%.
 | LangMem | 58.1% | per blog | MemMachine blog (Sep 2025) |
 | OpenAI memory | 52.9% | per blog | MemMachine blog (Sep 2025) |
 
-Two things we checked before claiming this, because "we're #1" is exactly the kind of
-claim that's usually a measurement artifact:
+Per category: open-domain 96.2%, temporal 92.5%, single-hop 85.5%, **multi-hop 79.2%** —
+the last one is where our remaining work is.
 
-- **It isn't the judge.** We graded identical answers twice — `gpt-4o-mini` with Mem0's
-  prompt gives 95.0%, our own `flash-lite` judge gives 94.7%. The two agree within 0.3
-  points (+18/−13 flips), so the lead doesn't come from a friendly grader.
-- **It isn't only the ensemble.** Our **single-pass** run is 92.4%, still above the
-  highest published row. The ensemble adds ~2.6 points on top.
+**How much of this is the grader?** We re-graded the identical 1540 answers with
+`gpt-4o-mini` running Mem0's own `ACCURACY_PROMPT` — the judge behind the published Mem0
+LoCoMo numbers — and got **95.6%** (+53/−4 flips,
+[`bench/`](bench/results/locomo-1540q/single-pass-mem0judge/)). That prompt instructs the
+judge to be generous ("as long as it touches on the same topic"), and it is: it accepts
+"Saturday, May 20" for a gold of "the Sunday before May 25". Same leniency applies to
+every system graded by it, so it is the fair judge for cross-system comparison and the
+wrong one for our own iteration. **We lead with the stricter number.**
 
-Per category: open-domain 97.4%, single-hop 94.7%, temporal 93.1%, **multi-hop 81.2%** —
-that last one is where the remaining work is.
-
-Caveat we'd rather state ourselves: the answerer models differ across rows (ours is
-gemini-flash/haiku, MemMachine's is gpt-4.1-mini), and as the LongMemEval control below
-shows, that alone is worth several points in either direction.
+The other caveat we'd rather state than have found: answerer models differ across rows
+(ours is gemini-flash, MemMachine's is gpt-4.1-mini). As the LongMemEval control below
+shows, that alone is worth several points in either direction — so read a 0.7-point gap
+as "comparable", not as a win.
 
 ### LongMemEval_S
 
@@ -77,10 +73,9 @@ several points each (see below). Sources are papers/blogs as collected by AMB's
 | Chronos | 95.6% | per paper | Chronos (arXiv:2603.16862) |
 | Mem0 (self-reported) | 94.4% | gpt-5 / gpt-5 | Mem0 memory-benchmarks |
 | Mastra | 92.8% | per paper | Chronos (arXiv:2603.16862) |
-| **livemem ensemble** (2 runs + arbitration) | **92.2%** | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s500/ensemble-vote2/) |
 | Honcho | 90.4% | per blog | Plastic Labs |
 | SmartSearch | 88.4% | per paper | SmartSearch (arXiv:2603.15599) |
-| **livemem single-pass** | **87.8%** @ 4.2k tok | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s500/single-pass/) |
+| **livemem** | **87.8%** @ 4.2k tok | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s500/single-pass/) |
 | Memora | 87.4% | per paper | Memora (arXiv:2602.03315) |
 | Supermemory (Gemini-3) | 85.2% | per paper | Hindsight (arXiv:2512.12818) |
 | EMem-G | 84.9% | per paper | EMem (arXiv:2511.17208) |
@@ -134,9 +129,8 @@ This repo is the **reference implementation**: the full architecture, honestly s
 The hosted pipeline adds tuned extraction prompting and retrieval refinements —
 number-aware deduplication (two facts with different digits are never duplicates, which
 matters for counting questions), entity cards and 3-turn conversation-window excerpts as
-retrieval units. The 92.2% ensemble row is two complementary retrieval runs plus
-rule-based arbitration, not a hosted API mode. Same API surface, so you can develop
-against OSS and point at hosted later.
+retrieval units. Same API surface, so you can develop against OSS and point at hosted
+later.
 
 | | OSS (this repo) | Hosted |
 |---|---|---|

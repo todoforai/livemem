@@ -35,21 +35,16 @@ comparing.
 
 | README row | Directory | Answerer / judge |
 |---|---|---|
-| LongMemEval 500q — ensemble 92.2% | `results/longmemeval-s500/ensemble-vote2/` | 2× flash-lite runs + arbitration / flash-lite |
-| LongMemEval 500q — single-pass 87.8% | `results/longmemeval-s500/single-pass/` | flash-lite / flash-lite |
+| LoCoMo 1540q — **92.4%** | `results/locomo-1540q/single-pass/` | gemini-flash / flash-lite |
+| LoCoMo 1540q — same answers, Mem0's judge — 95.6% | `results/locomo-1540q/single-pass-mem0judge/` | gemini-flash / **gpt-4o-mini, Mem0 ACCURACY_PROMPT** |
+| LongMemEval 500q — **87.8%** | `results/longmemeval-s500/single-pass/` | flash-lite / flash-lite |
 | LongMemEval — bm25 @5k control 58.6% | `results/longmemeval-s500/baseline-bm25-5k/` | flash-lite / flash-lite |
 | LongMemEval s94 — hosted API 81.9% / 77.7% | `results/longmemeval-s94/hosted-http/` | flash-lite / flash-lite |
 | LongMemEval s94 — gpt-5 answerer control 92.6% | `results/longmemeval-s94/v4-gpt5-answerer/` | **gpt-5** / flash-lite |
-| LoCoMo 1540q — ensemble 95.0% (94.7% flash-lite-judged) | `results/locomo-1540q/ensemble-vote2/` | flash/haiku vote / **gpt-4o-mini** (Mem0 prompt) |
-| LoCoMo 1540q — single-pass 92.4% | `results/locomo-1540q/single-pass/` | **gemini-flash** / flash-lite |
 
-Two caveats we'd rather state than have found:
-
-- The **ensemble** directories contain derived artifacts (two runs combined by an
-  arbitration rule), not a single raw AMB run.
-- The LoCoMo ensemble was judged twice: **95.0%** by gpt-4o-mini with Mem0's own accuracy
-  prompt (chosen so the judge matches Mem0's published setup), and **94.7%** by flash-lite
-  on identical answers. Both verdict sets are in the result file.
+The two LoCoMo directories hold the **same 1540 answers** graded by different judges
+(verified byte-identical answer strings) — 92.4% under ours, 95.6% under Mem0's more
+generous prompt. We quote the lower one.
 
 ## Why the answerer matters more than you'd think
 

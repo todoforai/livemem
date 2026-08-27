@@ -1,0 +1,19 @@
+{
+  "benchmark": "LoCoMo FULL 1540q — judge swap only",
+  "answers": "identical to 20260826-F7-flash-cards-composite (single-pass, cards 0.3 + windows), NO re-answering — verified 1540/1540 answer strings unchanged",
+  "answerer": "gemini-flash-latest + infer1 (single pass, no ensemble)",
+  "judge": "gpt-4o-mini, temperature 0, Mem0 memory-benchmarks ACCURACY_PROMPT (json label)",
+  "date": "2026-08-27",
+  "questions": 1540,
+  "accuracy": "95.6% (1472/1540)",
+  "flash_lite_judge_was": "92.4% (1423/1540)",
+  "flips": "+53 / -4 vs flash-lite judge",
+  "per_category": {
+    "single-hop": "264/282 = 93.6%",
+    "multi-hop": "82/96 = 85.4%",
+    "temporal": "302/321 = 94.1%",
+    "open-domain": "824/841 = 98.0%"
+  },
+  "note": "Same-judge comparison vs the Mem0 leaderboard. Mem0's prompt instructs the judge to be generous ('as long as it touches on the same topic'), so it is materially more lenient than our flash-lite judge: +53/-4 flips, +3.2pt on identical answers. That leniency applies to every system graded by it, which is why it is the right judge for cross-system comparison and the wrong one for internal iteration. Notably this single-pass run scores ABOVE the vote2 ensemble under the same judge (95.6 vs 95.0) — the ensemble's arbitration rules were tuned against the stricter flash-lite judge.",
+  "script": "bench/rejudge_4omini.py"
+}
