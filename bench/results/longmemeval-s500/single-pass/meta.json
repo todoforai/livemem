@@ -1,0 +1,16 @@
+{
+  "benchmark": "LongMemEval_S full 500",
+  "harness": "AMB (vectorize-io)",
+  "answerer": "gemini-flash-lite-latest",
+  "judge": "gemini-flash-lite-latest",
+  "extractor": "claude-haiku-4-5 (recall facts + entity-topic card consolidation)",
+  "embedder": "voyage-3.5-lite@512",
+  "date": "2026-08-26",
+  "config": "simplified livemem: entity cards 0.3 + 3-turn windows 0.7, budget 5000",
+  "budget": 5000,
+  "questions": 500,
+  "accuracy": "87.8% (439/500)",
+  "avg_context_tokens": 4199.6,
+  "note": "generality test of LoCoMo iter2-4 features, same answerer/judge as v4 baseline (85.4%). Cross-session types +: knowledge-update 82.1->93.6, multi-session 77.4->82.0, temporal 85.7->88.0. Single-session types -: user 98.6->95.7, assistant 98.2->91.1 (windows dilute the one-right-session case v4 handled by full-session retrieval). Net +2.4pt, fewer tokens (4.2k vs 4.9k).",
+  "median_context_tokens": 4185
+}

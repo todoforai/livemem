@@ -1,0 +1,20 @@
+{
+ "benchmark": "locomo-1540q",
+ "harness": "AMB (amb-locomo clone)",
+ "answerer": "gemini-flash-latest + infer1",
+ "judge": "gemini-flash-lite-latest",
+ "extractor": "claude-haiku-4-5-20251001",
+ "embedder": "voyage-3.5-lite@512",
+ "config": "cards=0.3 + windows",
+ "budget": 5000,
+ "questions": 1540,
+ "accuracy": 92.4,
+ "by_category": {
+  "multi-hop": "76/96",
+  "open-domain": "809/841",
+  "single-hop": "241/282",
+  "temporal": "297/321"
+ },
+ "note": "F5 partial(1226q, gemini daily quota) + F3 fallback rest",
+ "date": "2026-08-26"
+}

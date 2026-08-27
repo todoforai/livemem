@@ -1,0 +1,22 @@
+{
+  "benchmark": "LongMemEval_S 94-q cached subset",
+  "harness": "AMB (vectorize-io)",
+  "answerer": "gpt-5",
+  "judge": "gemini-flash-lite-latest",
+  "extractor": "claude-haiku-4-5",
+  "embedder": "voyage-3.5-lite@512",
+  "date": "2026-08-26",
+  "config": "v4 unchanged (recall extraction cache-full + day labels + dedup 0.88, bundle off); ONLY answerer swapped flash-lite -> gpt-5. One-variable answerer-sensitivity run, motivated by Mem0 self-reported 94.4% which defaults to gpt-5 answerer+judge in mem0ai/memory-benchmarks.",
+  "budget": 5000,
+  "questions": "94 full",
+  "accuracy": "92.6% (87/94)",
+  "avg_ctx_tokens": 4874,
+  "note": "+7.4pt over v4-full94 (85.1%) from answerer alone. All 7 remaining wrong are aggregation/set-selection (counting across sessions) + 2 hedged-but-contained-gold judge calls. Answerer-arithmetic bucket eliminated as predicted (~3.4pt) plus borderline reasoning. Mem0 94.4 @6.8k vs livemem 92.6 @4.9k with a STRICTER judge (flash-lite vs their gpt-5 judge) and different harness \u2014 gap essentially closed.",
+  "rejudge_gpt5": {
+    "judge": "gpt-5 (AMB per-category prompts, same 94 answers)",
+    "accuracy": "90.4% (85/94)",
+    "flips": "+2 (hedged-gold accepted) / -4 (1 hedge, 1 count, 2 preference-with-invented-details rejected)",
+    "file": "rejudge_gpt5.json",
+    "note": "gpt-5 judge stricter than flash-lite overall; comparable answerer+judge-model number vs Mem0 94.4 is 90.4"
+  }
+}

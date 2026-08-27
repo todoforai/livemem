@@ -1,0 +1,30 @@
+{
+  "benchmark": "LongMemEval_S 94-q cached subset",
+  "harness": "AMB (vectorize-io), checkout ~/repo/amb-http + livemem_http.py provider",
+  "provider": "livemem-http",
+  "answerer": "gemini-flash-lite-latest",
+  "judge": "gemini-flash-lite-latest",
+  "extractor": "claude-haiku-4-5 (LIVE, memory-manager /v1/live/ingest, direct Anthropic API)",
+  "embedder": "text-embedding-3-small@512 (prod extract.ts)",
+  "date": "2026-08-26",
+  "memory_manager_commit": "ee32c2731b88e9300729a6d942427f50f7a7768e",
+  "config": "prod HEAD = r5b + assistant-recall extraction fix (3b294e9) + real-token budget accounting (3b294e9) + cards+windows query render (4b34f9f) + int8 packed embeddings (d6920e2) + lazy-greedy select (e4a8ad4) + single-consolidation guard (ee32c27)",
+  "runs": {
+    "r8b": {
+      "budget": 5000,
+      "avg_context_tokens": 4182,
+      "accuracy": "77.7% (73/94)",
+      "file": "result-r8b-b5000.json",
+      "note": "budget now HONEST (r5b delivered 5742 real tok at the same nominal 5000) — score drop is context-size, not regression"
+    },
+    "r8c": {
+      "budget": 6870,
+      "avg_context_tokens": 5740,
+      "accuracy": "81.9% (77/94)",
+      "file": "result-r8c-b6870.json",
+      "note": "budget-matched to r5b's REAL delivered context (5742 tok): apples-to-apples vs r5b 83.0% — within the 2-question noise band (9 lost vs 8 gained, all churn in counting/aggregation)"
+    }
+  },
+  "extraction_fix_verified": "all 3 targeted assistant-recall failures now correct (Borges / Fifth Album / fusion-Prabhakar) in both r8b and r8c",
+  "run_incident": "first r8 attempt died at 40/94 on cli-proxy-api Claude auth cooldown (503 auth_unavailable); restarted memory-manager on direct Anthropic API key, resumed via ingest ledger"
+}

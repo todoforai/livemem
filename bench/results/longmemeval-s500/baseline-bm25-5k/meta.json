@@ -1,0 +1,15 @@
+{
+  "benchmark": "LongMemEval_S full 500",
+  "harness": "AMB (vectorize-io)",
+  "answerer": "gemini-flash-lite-latest",
+  "judge": "gemini-flash-lite-latest",
+  "extractor": "-",
+  "embedder": "-",
+  "date": "2026-08-25",
+  "config": "bm25 provider, 5k token budget",
+  "budget": 5000,
+  "questions": 500,
+  "accuracy": "58.6% (293/500)",
+  "cost": "$0 extraction (bm25 is local); answer+judge on gemini-flash-lite free tier key",
+  "note": "local control baseline; 94q subset gave 57.4% - consistent"
+}
