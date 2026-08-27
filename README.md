@@ -19,45 +19,106 @@ budget**. Selection is cheap math, so you can afford to re-select on every quest
 
 ## Benchmarks
 
-Measured on the [AMB harness](https://github.com/vectorize-io/agent-memory-benchmark)
-(independent runner: same answerer, judge and datasets for every memory provider).
+Our runs use the [AMB harness](https://github.com/vectorize-io/agent-memory-benchmark)
+— an independent runner that fixes the dataset, answerer and judge across providers.
+Raw per-question outputs for our rows: [`bench/results/`](bench/results/).
 
-| System | LongMemEval_S (500q) | LoCoMo (1540q) | Avg context |
+### LongMemEval_S
+
+Published results from the literature, plus ours. **These are not one apples-to-apples
+leaderboard** — each row carries its own harness, answerer and judge, and those are worth
+several points each (see below). Sources are papers/blogs as collected by AMB's
+`external_results.json`.
+
+| System | Acc. | Answerer / judge | Source |
 |---|---|---|---|
-| **livemem ensemble** (2-vote) | **92.2%** | **94.7%** | 2 × ~5k tok |
-| **livemem single-pass** | **87.8%** | 92.4% | **~5k tok** |
-| hindsight | 94.6% | 92.0% | ~43k tok |
-| full-history baseline | — | — | 115k tok |
-| bm25 @5k baseline | 58.6% | 60.0% | 5k tok |
-| **livemem OSS (this repo)** | *run it yourself* | *run it yourself* | 5k tok |
+| Chronos | 95.6% | per paper | Chronos (arXiv:2603.16862) |
+| Mem0 (self-reported) | 94.4% | gpt-5 / gpt-5 | Mem0 memory-benchmarks |
+| Mastra | 92.8% | per paper | Chronos (arXiv:2603.16862) |
+| **livemem ensemble** (2 runs + arbitration) | **92.2%** | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s500/ensemble-vote2/) |
+| Honcho | 90.4% | per blog | Plastic Labs |
+| SmartSearch | 88.4% | per paper | SmartSearch (arXiv:2603.15599) |
+| **livemem single-pass** | **87.8%** @ 4.2k tok | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s500/single-pass/) |
+| Memora | 87.4% | per paper | Memora (arXiv:2602.03315) |
+| Supermemory (Gemini-3) | 85.2% | per paper | Hindsight (arXiv:2512.12818) |
+| EMem-G | 84.9% | per paper | EMem (arXiv:2511.17208) |
+| EverMemOS | 83.0% | per paper | SmartSearch (arXiv:2603.15599) |
+| **livemem hosted API today** (s94) | **81.9%** @ 5.7k tok | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s94/hosted-http/) |
+| Supermemory | 81.6% | per paper | Hindsight (arXiv:2512.12818) |
+| TiMem | 79.0% | per paper | TiMem (arXiv:2601.02845) |
+| CoM | 76.4% | per paper | CoM (arXiv:2601.14287) |
+| Nemori / LiCoMemory / MemOS | 74.6 / 73.8 / 73.1% | per paper | respective papers |
+| Zep / ENGRAM | 71.2 / 71.4% | per paper | Zep (arXiv:2501.13956), ENGRAM |
+| Mem0 (third-party eval) | 67.6% | per paper | TiMem (arXiv:2601.02845) |
+| Full-context GPT-4o | 60.2% | gpt-4o | LongMemEval paper (arXiv:2410.10813) |
+| **bm25 @5k** (our control) | 58.6% | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s500/baseline-bm25-5k/) |
+| MemoryBank | 22.9% | per paper | TiMem (arXiv:2601.02845) |
 
-Answerer+judge: `gemini-flash-lite` (deliberately cheap — memory quality has to carry the
-score, not the answerer). Mem0 reports 94.4% on LongMemEval with a `gpt-5` answerer **and**
-`gpt-5` judge on its own harness; swapping only the answerer to gpt-5 moves our single-pass
-by +7pts — most of any headline gap between systems is the answerer model, not the memory.
-Full run configs and result JSONs: [`bench/`](bench/).
+Note the two Mem0 rows: **94.4% self-reported, 67.6% in a third-party paper.** That
+spread is the whole problem with reading these tables as a ranking.
 
-**What the hosted API serves today** is the single-pass pipeline (live extraction over
-HTTP, ~4.2k delivered tokens at a 5k budget, hard-capped): it currently measures
-**~78–82%** on LongMemEval s94 depending on budget — the 87.8%/92.2% rows use the same
-architecture with offline extraction caches and (for ensemble) two votes. The gap is
-convergence work in progress, tracked openly in [`bench/`](bench/); numbers here are what
-you can reproduce, not aspirations.
+### LoCoMo
+
+| System | Acc. | Answerer / judge | Source |
+|---|---|---|---|
+| **livemem ensemble** | **95.0%** | flash/haiku vote / gpt-4o-mini (Mem0 prompt) | [`bench/`](bench/results/locomo-1540q/ensemble-vote2/) |
+| **livemem ensemble** (same answers) | 94.7% | flash/haiku vote / flash-lite | same dir, `flash_lite_judge_was` |
+| **livemem single-pass** | **92.4%** | gemini-flash / flash-lite | [`bench/`](bench/results/locomo-1540q/single-pass/) |
+| MemMachine v0.2 | 91.7% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
+| Honcho | 89.9% | per blog | Plastic Labs |
+| MemMachine | 84.9% | per blog | MemMachine blog (Sep 2025) |
+| Mem0 (gpt-4.1-mini) | 80.0% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
+| Memobase / Zep | 75.8 / 75.1% | per blog | MemMachine blog (Sep 2025) |
+| Letta | 74.0% | per blog | Letta blog |
+| Mem0 | 66.9% | per blog | MemMachine blog (Sep 2025) |
+| LangMem | 58.1% | per blog | MemMachine blog (Sep 2025) |
+| OpenAI memory | 52.9% | per blog | MemMachine blog (Sep 2025) |
+
+### Why these numbers aren't directly comparable
+
+We ran the control ourselves. Taking **our own memory unchanged** — same extracted facts,
+same retrieval, same rendered context — and swapping *only* the answering model:
+
+| Config (94-question LongMemEval subset) | Acc. |
+|---|---|
+| flash-lite answerer, flash-lite judge | 85.1% |
+| **gpt-5 answerer**, flash-lite judge | **92.6%** (+7.4) |
+| gpt-5 answerer, **gpt-5 judge** (same answers re-judged) | 90.4% (−2.2) |
+
+The answerer alone moves the same memory system by 7 points; the judge moves it 2 more,
+and the stronger judge was *stricter*, not more generous
+([`bench/results/longmemeval-s94/v4-gpt5-answerer/`](bench/results/longmemeval-s94/v4-gpt5-answerer/)).
+So a difference of a few points between two rows above says more about their harnesses
+than about their memory. **Our rows all state their configuration; treat any row that
+doesn't with the same caution.**
+
+Context size is the other hidden axis: we run at **~4–5k tokens** per question. Some
+published systems use 40k+. Accuracy per token is a different ranking than accuracy.
+
+### What the hosted API serves today
+
+The hosted API runs the single-pass pipeline with **live** extraction over HTTP. On the
+94-question subset it measures **81.9%** at a budget-matched 5.7k tokens, or **77.7%**
+at a strict 5k budget (4.2k delivered) — below the 87.8% full-500 row, which uses offline
+extraction caches. Closing that is in-progress work, tracked openly in
+[`bench/`](bench/). Numbers here are what you can reproduce, not aspirations.
 
 ## OSS vs hosted
 
 This repo is the **reference implementation**: the full architecture, honestly simplified.
-The hosted pipeline adds tuned extraction prompting, retrieval-unit and deduplication
-refinements (number-aware dedup, entity cards + conversation-window excerpts), and will
-grow an ensemble answering mode. Same API surface, so you can develop against OSS and
-point at hosted later.
+The hosted pipeline adds tuned extraction prompting and retrieval refinements —
+number-aware deduplication (two facts with different digits are never duplicates, which
+matters for counting questions), entity cards and 3-turn conversation-window excerpts as
+retrieval units. The 92.2% ensemble row is two complementary retrieval runs plus
+rule-based arbitration, not a hosted API mode. Same API surface, so you can develop
+against OSS and point at hosted later.
 
 | | OSS (this repo) | Hosted |
 |---|---|---|
 | Architecture | extract → embed → budget-packed select | same |
 | Extraction | generic fact extraction | recall-tuned, reconcile-aware |
 | Retrieval | cosine + greedy knapsack, day labels | + cards/windows units, number-aware dedup |
-| Answer mode | single pass | single pass (ensemble planned) |
+| Answer mode | single pass | single pass |
 | Run it | `bun add livemem` | `POST api.todofor.ai/v1/live/ingest` |
 
 The benchmark harness in [`bench/`](bench/) runs against **either** — measure the hosted
@@ -68,7 +129,7 @@ API with your own key, or measure your fork of the OSS core.
 ```ts
 import { Memory } from 'livemem'
 
-const mem = new Memory()                                // in-memory; Redis adapter included
+const mem = new Memory()                                // in-memory; `state` is plain JSON — persist it anywhere
 await mem.ingest(userId, chatText, { at: '2026-08-01' })  // 1 LLM call: chat → dated facts
 const block = await mem.render(userId, {                 // no LLM: cosine + knapsack
   budget: 1500,
@@ -86,11 +147,15 @@ Needs `ANTHROPIC_API_KEY` (extraction) and `OPENAI_API_KEY` (embeddings).
   selector, not the extractor.
 - **Every fact carries its date.** Day labels anchor relative references ("last
   Saturday") and let the model order evolving values without a reasoning step.
-- **The budget is a hard, real-token contract.** Selection accounts for rendered
-  framing (prefixes, headers), not just fact text — the block you get fits the
-  context you promised.
-- **Retrieval is pure math.** No LLM, no reranker call: cosine against 512-d
-  embeddings plus greedy budget packing, milliseconds per render.
+- **The budget covers the rendered block, not just the text.** Date prefixes and
+  headers are charged too (`- [2026-08-14] ` is 15 characters but ~10 tokens — dates
+  are token-dense). Estimation is a conservative `chars/4` proxy plus per-line and
+  header allowances, verified against `cl100k_base` to stay under budget; it is not
+  a tokenizer-exact contract.
+- **No LLM on the retrieval path.** Cosine against 512-d embeddings plus greedy
+  budget packing — tens of milliseconds even on large states. (Query-conditioned
+  rendering does make one embedding API call to embed the query, which dominates
+  wall-clock at ~200ms.)
 
 ## License
 

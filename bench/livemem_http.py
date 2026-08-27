@@ -1,23 +1,23 @@
-"""LiveMem HTTP provider — measures the PRODUCTION memory-manager pipeline.
+"""AMB provider for livemem over HTTP — measures either tier through one interface:
 
-Unlike livemem.py (offline cache + python port of the builder), this provider
-drives the real deployed TS implementation over HTTP:
+  * the OSS core in this repo   (`bun run bench/serve.ts`, LIVEMEM_HTTP_URL=localhost)
+  * the hosted API              (LIVEMEM_HTTP_URL=https://api.todofor.ai)
 
-  ingest:   POST /v1/live/ingest  per session (server runs Haiku extraction,
-            embedding, observe() dedup, CAS state update — synchronously)
-  retrieve: GET  /v1/live/render?budget=N  → the rendered LIVE MEMORY block
-            is the whole context (no query-side ranking in prod).
+  ingest:   POST /v1/live/ingest   one call per session; the server extracts facts,
+            embeds and merges them into that user's state
+  retrieve: GET  /v1/live/render?budget=N&q=...  → the rendered memory block, used
+            as the entire answering context
 
-Per-question isolation: x-act-as: bench-lme-<run>-<question_id> (admin token),
-so every question gets a fresh Redis livemem:{userId} state.
+Each benchmark question gets its own user id, so states never bleed between questions.
 
 Env:
   LIVEMEM_HTTP_URL     default http://localhost:8900
-  LIVEMEM_HTTP_KEY     memory-manager admin key (required)
-  LIVEMEM_HTTP_RUN     run nonce baked into user ids (default "r1") — bump to
-                       get fresh state without flushing Redis
-  LIVEMEM_BUDGET       render token budget (default 5000, same as python v4)
+  LIVEMEM_HTTP_KEY     API key (required)
+  LIVEMEM_HTTP_RUN     run nonce baked into the user ids (default "r1") — bump for
+                       a clean state without touching the previous run's
+  LIVEMEM_BUDGET       render token budget (default 5000)
   LIVEMEM_HTTP_PAR     parallel ingest requests per unit (default 6)
+  LIVEMEM_HTTP_LEDGER  optional file of finished units, so a re-run skips re-ingesting
 """
 import json
 import os
@@ -69,24 +69,24 @@ class LiveMemHTTPProvider(MemoryProvider):
     provider = "livemem"
     variant = "http"
     description = (
-        f"Production memory-manager over HTTP: /v1/live/ingest (Haiku extraction + observe dedup, "
-        f"TS) per session, /v1/live/render?budget={_BUDGET} as context. Per-question user isolation."
+        f"livemem over HTTP: /v1/live/ingest per session, "
+        f"/v1/live/render?budget={_BUDGET}&q=... as the answering context."
     )
     kind = "local"
     concurrency = 4
 
     def initialize(self) -> None:
         if not _KEY:
-            raise RuntimeError("LIVEMEM_HTTP_KEY not set (memory-manager admin key)")
+            raise RuntimeError("LIVEMEM_HTTP_KEY not set")
         _request("GET", "/health", "healthcheck")
 
     @staticmethod
     def _uid(user_id: str) -> str:
-        return f"bench-lme-{_RUN}-{user_id}"
+        return f"bench-{_RUN}-{user_id}"
 
     def ingest(self, documents: list[Document]) -> None:
-        # Ledger of fully-ingested units: their state already sits in Redis, so a
-        # crashed/re-run harness must not re-extract (cost) or double-observe them.
+        # Ledger of finished units: their state is already stored, so a re-run must
+        # not re-extract (cost) or double-observe them.
         ledger = os.environ.get("LIVEMEM_HTTP_LEDGER", "")
         uid = documents[0].user_id if documents else None
         done: set[str] = set()
