@@ -5,7 +5,7 @@ then pack the most relevant ones into a fixed token budget at question time — 
 no LLM call on the retrieval path.
 
 **[92.4% on LoCoMo](#locomo)** (1540q, single pass, ~5k context tokens per question) —
-graded by our own deliberately strict judge.
+graded by `claude-haiku-4-5`, the harsher of the two judges we measured.
 
 ```
 conversations ──extract──▶ dated facts + embeddings ──pack──▶ ≤ N-token memory block
@@ -28,12 +28,14 @@ Raw per-question outputs for our rows: [`bench/results/`](bench/results/).
 
 ### LoCoMo
 
-**92.4% on all 1540 questions**, single pass, ~5k context tokens — graded by our own
-judge, which we chose to be strict rather than flattering.
+**92.4% on all 1540 questions**, single pass, ~5k context tokens — answered by
+`gemini-flash`, graded by `claude-haiku-4-5` with AMB's built-in LoCoMo judge prompt. We
+report this rather than the higher score the same answers get from the judge model the
+published Mem0 rows use (see below).
 
 | System | Acc. | Answerer / judge | Source |
 |---|---|---|---|
-| **livemem** (single pass) | **92.4%** | gemini-flash / flash-lite | [`bench/`](bench/results/locomo-1540q/single-pass/) |
+| **livemem** (single pass) | **92.4%** | gemini-flash / claude-haiku-4-5 | [`bench/`](bench/results/locomo-1540q/single-pass/) |
 | MemMachine v0.2 | 91.7% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
 | Honcho | 89.9% | per blog | Plastic Labs |
 | MemMachine | 84.9% | per blog | MemMachine blog (Sep 2025) |
@@ -50,11 +52,13 @@ the last one is where our remaining work is.
 **How much of this is the grader?** We re-graded the identical 1540 answers with
 `gpt-4o-mini` running Mem0's own `ACCURACY_PROMPT` — the judge behind the published Mem0
 LoCoMo numbers — and got **95.6%** (+53/−4 flips,
-[`bench/`](bench/results/locomo-1540q/single-pass-mem0judge/)). That prompt instructs the
-judge to be generous ("as long as it touches on the same topic"), and it is: it accepts
-"Saturday, May 20" for a gold of "the Sunday before May 25". Same leniency applies to
-every system graded by it, so it is the fair judge for cross-system comparison and the
-wrong one for our own iteration. **We lead with the stricter number.**
+[`bench/`](bench/results/locomo-1540q/single-pass-mem0judge/)). The two judge *prompts* are
+near-identical (AMB's LoCoMo prompt is itself derived from Mem0's, generosity clause
+included), so this is a judge **model** effect: `claude-haiku-4-5` applies that clause far
+more conservatively. It rejects "Saturday, May 20" for a gold of "the Sunday before
+May 25"; `gpt-4o-mini` accepts it. The same leniency applies to every system graded by
+`gpt-4o-mini`, so it is the fair judge for cross-system comparison and the wrong one for
+our own iteration. **We lead with the lower number.**
 
 The other caveat we'd rather state than have found: answerer models differ across rows
 (ours is gemini-flash, MemMachine's is gpt-4.1-mini). As the LongMemEval control below

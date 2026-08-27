@@ -35,7 +35,7 @@ comparing.
 
 | README row | Directory | Answerer / judge |
 |---|---|---|
-| LoCoMo 1540q — **92.4%** | `results/locomo-1540q/single-pass/` | gemini-flash / flash-lite |
+| LoCoMo 1540q — **92.4%** | `results/locomo-1540q/single-pass/` | gemini-flash / claude-haiku-4-5 |
 | LoCoMo 1540q — same answers, Mem0's judge — 95.6% | `results/locomo-1540q/single-pass-mem0judge/` | gemini-flash / **gpt-4o-mini, Mem0 ACCURACY_PROMPT** |
 | LongMemEval 500q — **87.8%** | `results/longmemeval-s500/single-pass/` | flash-lite / flash-lite |
 | LongMemEval — bm25 @5k control 58.6% | `results/longmemeval-s500/baseline-bm25-5k/` | flash-lite / flash-lite |
@@ -43,8 +43,13 @@ comparing.
 | LongMemEval s94 — gpt-5 answerer control 92.6% | `results/longmemeval-s94/v4-gpt5-answerer/` | **gpt-5** / flash-lite |
 
 The two LoCoMo directories hold the **same 1540 answers** graded by different judges
-(verified byte-identical answer strings) — 92.4% under ours, 95.6% under Mem0's more
-generous prompt. We quote the lower one.
+(verified byte-identical answer strings) — 92.4% under `claude-haiku-4-5`, 95.6% under
+`gpt-4o-mini`. The prompts are near-identical (AMB's LoCoMo judge prompt is derived from
+Mem0's `ACCURACY_PROMPT`, "be generous" clause included), so the 3.2pt is the judge
+*model*: haiku applies that clause much more conservatively. We quote the lower one.
+
+Our LongMemEval rows use a `gemini-flash-lite` judge, so judges are **not** uniform across
+benchmarks here; each `meta.json` states its own.
 
 ## Why the answerer matters more than you'd think
 

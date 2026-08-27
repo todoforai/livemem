@@ -2,7 +2,7 @@
  "benchmark": "locomo-1540q",
  "harness": "AMB (amb-locomo clone)",
  "answerer": "gemini-flash-latest + infer1",
- "judge": "gemini-flash-lite-latest",
+ "judge": "claude-haiku-4-5-20251001 (AMB LoCoMo judge prompt)",
  "extractor": "claude-haiku-4-5-20251001",
  "embedder": "voyage-3.5-lite@512",
  "config": "cards=0.3 + windows",
