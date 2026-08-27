@@ -1,0 +1,10 @@
+{
+  "name": "livemem",
+  "version": "0.1.0",
+  "description": "Token-budgeted long-term memory for AI agents — extract dated facts once, select per-question with pure math.",
+  "type": "module",
+  "main": "src/index.ts",
+  "license": "MIT",
+  "repository": "github:todoforai/livemem",
+  "keywords": ["memory", "agents", "llm", "rag", "longmemeval"]
+}
