@@ -4,6 +4,10 @@
 then pack the most relevant ones into a fixed token budget at question time — pure math,
 no LLM call on the retrieval path.
 
+**[95.0% on LoCoMo](#locomo--best-published-result-were-aware-of)** (1540q, graded by
+Mem0's own judge and prompt) — the best published result we're aware of, at ~5k context
+tokens per question.
+
 ```
 conversations ──extract──▶ dated facts + embeddings ──pack──▶ ≤ N-token memory block
                 (1 LLM call,  (stored per user)        (cosine + greedy knapsack,
@@ -22,6 +26,44 @@ budget**. Selection is cheap math, so you can afford to re-select on every quest
 Our runs use the [AMB harness](https://github.com/vectorize-io/agent-memory-benchmark)
 — an independent runner that fixes the dataset, answerer and judge across providers.
 Raw per-question outputs for our rows: [`bench/results/`](bench/results/).
+
+### LoCoMo — best published result we're aware of
+
+**95.0% on all 1540 questions**, above every published number we could find, and — the
+part that makes it checkable — graded by **Mem0's own judge**: `gpt-4o-mini` at
+temperature 0 running Mem0's `ACCURACY_PROMPT` from their memory-benchmarks repo. On that
+same judge, Mem0-graph is published at 68.4%.
+
+| System | Acc. | Answerer / judge | Source |
+|---|---|---|---|
+| **livemem ensemble** | **95.0%** | flash/haiku 2-run vote / **gpt-4o-mini, Mem0's prompt** | [`bench/`](bench/results/locomo-1540q/ensemble-vote2/) |
+| **livemem ensemble** (same answers, our judge) | 94.7% | flash/haiku 2-run vote / flash-lite | same dir, `flash_lite_judge_was` |
+| **livemem single-pass** | **92.4%** | gemini-flash / flash-lite | [`bench/`](bench/results/locomo-1540q/single-pass/) |
+| MemMachine v0.2 | 91.7% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
+| Honcho | 89.9% | per blog | Plastic Labs |
+| MemMachine | 84.9% | per blog | MemMachine blog (Sep 2025) |
+| Mem0 (gpt-4.1-mini) | 80.0% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
+| Memobase / Zep | 75.8 / 75.1% | per blog | MemMachine blog (Sep 2025) |
+| Letta | 74.0% | per blog | Letta blog |
+| Mem0 | 66.9% | per blog | MemMachine blog (Sep 2025) |
+| LangMem | 58.1% | per blog | MemMachine blog (Sep 2025) |
+| OpenAI memory | 52.9% | per blog | MemMachine blog (Sep 2025) |
+
+Two things we checked before claiming this, because "we're #1" is exactly the kind of
+claim that's usually a measurement artifact:
+
+- **It isn't the judge.** We graded identical answers twice — `gpt-4o-mini` with Mem0's
+  prompt gives 95.0%, our own `flash-lite` judge gives 94.7%. The two agree within 0.3
+  points (+18/−13 flips), so the lead doesn't come from a friendly grader.
+- **It isn't only the ensemble.** Our **single-pass** run is 92.4%, still above the
+  highest published row. The ensemble adds ~2.6 points on top.
+
+Per category: open-domain 97.4%, single-hop 94.7%, temporal 93.1%, **multi-hop 81.2%** —
+that last one is where the remaining work is.
+
+Caveat we'd rather state ourselves: the answerer models differ across rows (ours is
+gemini-flash/haiku, MemMachine's is gpt-4.1-mini), and as the LongMemEval control below
+shows, that alone is worth several points in either direction.
 
 ### LongMemEval_S
 
@@ -56,23 +98,6 @@ several points each (see below). Sources are papers/blogs as collected by AMB's
 
 Note the two Mem0 rows: **94.4% self-reported, 67.6% in a third-party paper.** That
 spread is the whole problem with reading these tables as a ranking.
-
-### LoCoMo
-
-| System | Acc. | Answerer / judge | Source |
-|---|---|---|---|
-| **livemem ensemble** | **95.0%** | flash/haiku vote / gpt-4o-mini (Mem0 prompt) | [`bench/`](bench/results/locomo-1540q/ensemble-vote2/) |
-| **livemem ensemble** (same answers) | 94.7% | flash/haiku vote / flash-lite | same dir, `flash_lite_judge_was` |
-| **livemem single-pass** | **92.4%** | gemini-flash / flash-lite | [`bench/`](bench/results/locomo-1540q/single-pass/) |
-| MemMachine v0.2 | 91.7% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
-| Honcho | 89.9% | per blog | Plastic Labs |
-| MemMachine | 84.9% | per blog | MemMachine blog (Sep 2025) |
-| Mem0 (gpt-4.1-mini) | 80.0% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
-| Memobase / Zep | 75.8 / 75.1% | per blog | MemMachine blog (Sep 2025) |
-| Letta | 74.0% | per blog | Letta blog |
-| Mem0 | 66.9% | per blog | MemMachine blog (Sep 2025) |
-| LangMem | 58.1% | per blog | MemMachine blog (Sep 2025) |
-| OpenAI memory | 52.9% | per blog | MemMachine blog (Sep 2025) |
 
 ### Why these numbers aren't directly comparable
 
