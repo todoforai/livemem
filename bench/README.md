@@ -40,7 +40,8 @@ comparing.
 | LongMemEval 500q — **87.8%** | `results/longmemeval-s500/single-pass/` | flash-lite / flash-lite |
 | LongMemEval — bm25 @5k control 58.6% | `results/longmemeval-s500/baseline-bm25-5k/` | flash-lite / flash-lite |
 | LongMemEval s94 — hosted API 81.9% / 77.7% | `results/longmemeval-s94/hosted-http/` | flash-lite / flash-lite |
-| LongMemEval s94 — gpt-5 answerer control 92.6% | `results/longmemeval-s94/v4-gpt5-answerer/` | **gpt-5** / flash-lite |
+| LongMemEval s94 — answerer control, baseline 85.1% | `results/longmemeval-s94/v4-flashlite-answerer/` | flash-lite / flash-lite |
+| LongMemEval s94 — answerer control, gpt-5 92.6% | `results/longmemeval-s94/v4-gpt5-answerer/` | **gpt-5** / flash-lite |
 
 The two LoCoMo directories hold the **same 1540 answers** graded by different judges
 (verified byte-identical answer strings) — 92.4% under `claude-haiku-4-5`, 95.6% under
@@ -53,9 +54,9 @@ benchmarks here; each `meta.json` states its own.
 
 ## Why the answerer matters more than you'd think
 
-`results/longmemeval-s94/v4-gpt5-answerer/` is a control, not a headline: the same memory
-state and the same rendered context, with only the answering model swapped from
-flash-lite to gpt-5, scores **85.1% → 92.6%**. Re-judging those identical answers with
+`v4-flashlite-answerer/` and `v4-gpt5-answerer/` are a control pair, not a headline: same
+memory state, same rendered context, only the answering model swapped —
+**85.1% → 92.6%**. Re-judging those identical answers with
 gpt-5 gives **90.4%** — the stronger judge was stricter.
 
 We answer with `gemini-flash-lite` for our main rows on purpose: a weak answerer reasons

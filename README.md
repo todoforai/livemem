@@ -36,15 +36,15 @@ published Mem0 rows use (see below).
 | System | Acc. | Answerer / judge | Source |
 |---|---|---|---|
 | **livemem** (single pass) | **92.4%** | gemini-flash / claude-haiku-4-5 | [`bench/`](bench/results/locomo-1540q/single-pass/) |
-| MemMachine v0.2 | 91.7% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
-| Honcho | 89.9% | per blog | Plastic Labs |
-| MemMachine | 84.9% | per blog | MemMachine blog (Sep 2025) |
-| Mem0 (gpt-4.1-mini) | 80.0% | gpt-4.1-mini | MemMachine blog (Dec 2025) |
-| Memobase / Zep | 75.8 / 75.1% | per blog | MemMachine blog (Sep 2025) |
-| Letta | 74.0% | per blog | Letta blog |
-| Mem0 | 66.9% | per blog | MemMachine blog (Sep 2025) |
-| LangMem | 58.1% | per blog | MemMachine blog (Sep 2025) |
-| OpenAI memory | 52.9% | per blog | MemMachine blog (Sep 2025) |
+| MemMachine v0.2 | 91.7% | gpt-4.1-mini | [MemMachine blog, Dec 2025](https://memmachine.ai/blog/2025/12/memmachine-v0.2-delivers-top-scores-and-efficiency-on-locomo-benchmark/) |
+| Honcho | 89.9% | per blog | [Plastic Labs](https://blog.plasticlabs.ai/research/Benchmarking-Honcho) |
+| MemMachine | 84.9% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
+| Mem0 (gpt-4.1-mini) | 80.0% | gpt-4.1-mini | [MemMachine blog, Dec 2025](https://memmachine.ai/blog/2025/12/memmachine-v0.2-delivers-top-scores-and-efficiency-on-locomo-benchmark/) |
+| Memobase / Zep | 75.8 / 75.1% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
+| Letta | 74.0% | per blog | [Letta blog](https://www.letta.com/blog/benchmarking-ai-agent-memory) |
+| Mem0 | 66.9% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
+| LangMem | 58.1% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
+| OpenAI memory | 52.9% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
 
 Per category: open-domain 96.2%, temporal 92.5%, single-hop 85.5%, **multi-hop 79.2%** —
 the last one is where our remaining work is.
@@ -74,26 +74,26 @@ several points each (see below). Sources are papers/blogs as collected by AMB's
 
 | System | Acc. | Answerer / judge | Source |
 |---|---|---|---|
-| Chronos | 95.6% | per paper | Chronos (arXiv:2603.16862) |
-| Mem0 (self-reported) | 94.4% | gpt-5 / gpt-5 | Mem0 memory-benchmarks |
-| Mastra | 92.8% | per paper | Chronos (arXiv:2603.16862) |
-| Honcho | 90.4% | per blog | Plastic Labs |
-| SmartSearch | 88.4% | per paper | SmartSearch (arXiv:2603.15599) |
+| Chronos | 95.6% | per paper | [arXiv:2603.16862](https://arxiv.org/abs/2603.16862) |
+| Mem0 (self-reported) | 94.4% | gpt-5 / gpt-5 | [Mem0 memory-benchmarks](https://github.com/mem0ai/memory-benchmarks) |
+| Mastra | 92.8% | per paper | [Chronos, arXiv:2603.16862](https://arxiv.org/abs/2603.16862) |
+| Honcho | 90.4% | per blog | [Plastic Labs](https://blog.plasticlabs.ai/research/Benchmarking-Honcho) |
+| SmartSearch | 88.4% | per paper | [arXiv:2603.15599](https://arxiv.org/abs/2603.15599) |
 | **livemem** | **87.8%** @ 4.2k tok | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s500/single-pass/) |
-| Memora | 87.4% | per paper | Memora (arXiv:2602.03315) |
-| Supermemory (Gemini-3) | 85.2% | per paper | Hindsight (arXiv:2512.12818) |
-| EMem-G | 84.9% | per paper | EMem (arXiv:2511.17208) |
-| EverMemOS | 83.0% | per paper | SmartSearch (arXiv:2603.15599) |
+| Memora | 87.4% | per paper | [arXiv:2602.03315](https://arxiv.org/abs/2602.03315) |
+| Supermemory (Gemini-3) | 85.2% | per paper | [Hindsight, arXiv:2512.12818](https://arxiv.org/abs/2512.12818) |
+| EMem-G | 84.9% | per paper | [arXiv:2511.17208](https://arxiv.org/abs/2511.17208) |
+| EverMemOS | 83.0% | per paper | [SmartSearch, arXiv:2603.15599](https://arxiv.org/abs/2603.15599) |
 | **livemem hosted API today** (s94) | **81.9%** @ 5.7k tok | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s94/hosted-http/) |
-| Supermemory | 81.6% | per paper | Hindsight (arXiv:2512.12818) |
-| TiMem | 79.0% | per paper | TiMem (arXiv:2601.02845) |
-| CoM | 76.4% | per paper | CoM (arXiv:2601.14287) |
-| Nemori / LiCoMemory / MemOS | 74.6 / 73.8 / 73.1% | per paper | respective papers |
-| Zep / ENGRAM | 71.2 / 71.4% | per paper | Zep (arXiv:2501.13956), ENGRAM |
-| Mem0 (third-party eval) | 67.6% | per paper | TiMem (arXiv:2601.02845) |
-| Full-context GPT-4o | 60.2% | gpt-4o | LongMemEval paper (arXiv:2410.10813) |
+| Supermemory | 81.6% | per paper | [Hindsight, arXiv:2512.12818](https://arxiv.org/abs/2512.12818) |
+| TiMem | 79.0% | per paper | [arXiv:2601.02845](https://arxiv.org/abs/2601.02845) |
+| CoM | 76.4% | per paper | [arXiv:2601.14287](https://arxiv.org/abs/2601.14287) |
+| Nemori / LiCoMemory / MemOS | 74.6 / 73.8 / 73.1% | per paper | [Nemori](https://arxiv.org/abs/2508.03341), [LiCoMemory](https://arxiv.org/abs/2511.01448), [TiMem](https://arxiv.org/abs/2601.02845) |
+| ENGRAM / Zep | 71.4 / 71.2% | per paper | [ENGRAM](https://arxiv.org/abs/2511.12960), [Zep](https://arxiv.org/abs/2501.13956) |
+| Mem0 (third-party eval) | 67.6% | per paper | [TiMem, arXiv:2601.02845](https://arxiv.org/abs/2601.02845) |
+| Full-context GPT-4o | 60.2% | gpt-4o | [LongMemEval, arXiv:2410.10813](https://arxiv.org/abs/2410.10813) |
 | **bm25 @5k** (our control) | 58.6% | flash-lite / flash-lite | [`bench/`](bench/results/longmemeval-s500/baseline-bm25-5k/) |
-| MemoryBank | 22.9% | per paper | TiMem (arXiv:2601.02845) |
+| MemoryBank | 22.9% | per paper | [TiMem, arXiv:2601.02845](https://arxiv.org/abs/2601.02845) |
 
 Note the two Mem0 rows: **94.4% self-reported, 67.6% in a third-party paper.** That
 spread is the whole problem with reading these tables as a ranking.
@@ -105,7 +105,7 @@ same retrieval, same rendered context — and swapping *only* the answering mode
 
 | Config (94-question LongMemEval subset) | Acc. |
 |---|---|
-| flash-lite answerer, flash-lite judge | 85.1% |
+| flash-lite answerer, flash-lite judge | 85.1% ([`bench/`](bench/results/longmemeval-s94/v4-flashlite-answerer/)) |
 | **gpt-5 answerer**, flash-lite judge | **92.6%** (+7.4) |
 | gpt-5 answerer, **gpt-5 judge** (same answers re-judged) | 90.4% (−2.2) |
 
@@ -116,8 +116,10 @@ So a difference of a few points between two rows above says more about their har
 than about their memory. **Our rows all state their configuration; treat any row that
 doesn't with the same caution.**
 
-Context size is the other hidden axis: we run at **~4–5k tokens** per question. Some
-published systems use 40k+. Accuracy per token is a different ranking than accuracy.
+Context size is the other hidden axis: we run at **~4–5k tokens** per question, measured
+after rendering. The AMB leaderboard's Hindsight run reports **43.6k** context tokens per
+question — ~9× ours. Accuracy per token is a different ranking than accuracy, and only one
+of the two usually gets reported.
 
 ### What the hosted API serves today
 

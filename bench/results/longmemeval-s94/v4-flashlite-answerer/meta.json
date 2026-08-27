@@ -1,0 +1,14 @@
+{
+ "benchmark": "LongMemEval_S 94-q cached subset",
+ "harness": "AMB (vectorize-io)",
+ "answerer": "gemini-flash-lite-latest",
+ "judge": "gemini-flash-lite-latest",
+ "extractor": "claude-haiku-4-5",
+ "embedder": "voyage-3.5-lite@512",
+ "date": "2026-08-25",
+ "config": "v4: recall extraction (cache-full) + day-only date labels + dedup 0.88, bundle off",
+ "budget": 5000,
+ "questions": "94 full",
+ "accuracy": "85.1% (80/94)",
+ "note": "Baseline of the answerer control: identical memory state and rendered context as v4-gpt5-answerer/, only the answering model differs (flash-lite here, gpt-5 there). 85.1% -> 92.6%."
+}
