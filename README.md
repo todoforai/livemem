@@ -4,8 +4,8 @@
 then pack the most relevant ones into a fixed token budget at question time — pure math,
 no LLM call on the retrieval path.
 
-**94.7% on LoCoMo** — the highest number we're aware of, at 5.0K context tokens. Open
-source, MIT, with the per-question artifacts for all 1540.
+**The #1 agent memory, open source.** 94.7% on LoCoMo — beating Mem0's 92.5% — at 5.0K
+context tokens instead of their 7.0K. MIT, with the per-question artifacts for all 1540.
 
 ```
 conversations ──extract──▶ dated facts + embeddings ──pack──▶ ≤ N-token memory block
