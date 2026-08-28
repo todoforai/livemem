@@ -31,6 +31,19 @@ const block = await mem.render(userId, {                  // no LLM: cosine + kn
 
 Needs `ANTHROPIC_API_KEY` (extraction) and `OPENAI_API_KEY` (embeddings).
 
+## Research highlights
+
+- **92.4 on LoCoMo** — 1540 questions, single pass, at **5.0K context tokens**
+- **87.8 on LongMemEval_S** — 500 questions, at **4.2K context tokens**
+- **No LLM on the retrieval path** — selection is cosine + knapsack, tens of milliseconds,
+  re-run for every question instead of maintaining a stale profile
+
+The nearest published rows buy their points with more context. Mem0's April 2026
+algorithm reports [92.5 on LoCoMo at 7.0K tokens and 94.4 on LongMemEval at
+6.8K](https://github.com/mem0ai/mem0): we are 0.1 behind on LoCoMo with **~30% less
+context**, and clearly behind on LongMemEval. Accuracy per token is the axis we optimise,
+and it is the one these tables usually leave out.
+
 ## Benchmarks
 
 Run on the OSS [AMB harness](https://github.com/vectorize-io/agent-memory-benchmark), an
@@ -38,33 +51,37 @@ independent runner that fixes dataset, answerer and judge across providers. Per-
 answers, judge verdicts and delivered token counts for every row:
 [`bench/results/`](bench/results/).
 
-**LoCoMo** — 1540 questions, single pass, ~5k context tokens:
+**LoCoMo** — 1540 questions, single pass:
 
-| System | Acc. | Answerer / judge |
-|---|---|---|
-| **livemem** | **92.4%** | gemini-flash / claude-haiku-4-5 |
-| MemMachine v0.2 | 91.7% | gpt-4.1-mini |
-| Honcho | 89.9% | per blog |
-| MemMachine | 84.9% | per blog |
-| Mem0 (gpt-4.1-mini) | 80.0% | gpt-4.1-mini |
-| Zep | 75.1% | per blog |
-| Letta | 74.0% | per blog |
+| System | Acc. | Context | Answerer / judge |
+|---|---|---|---|
+| Mem0 (Apr 2026 algorithm) | 92.5% | 7.0K | per blog |
+| **livemem** | **92.4%** | **5.0K** | gemini-flash / claude-haiku-4-5 |
+| MemMachine v0.2 | 91.7% | n/r | gpt-4.1-mini |
+| Honcho | 89.9% | n/r | per blog |
+| MemMachine | 84.9% | n/r | per blog |
+| Mem0 (gpt-4.1-mini) | 80.0% | n/r | gpt-4.1-mini |
+| Zep | 75.1% | n/r | per blog |
+| Letta | 74.0% | n/r | per blog |
 
 Per category: open-domain 96.2%, temporal 92.5%, single-hop 85.5%, **multi-hop 79.2%** —
 the last one is where our remaining work is.
 
-**LongMemEval_S** — 500 questions, at 4.2k context tokens per question:
+**LongMemEval_S** — 500 questions:
 
 | System | Acc. | Context |
 |---|---|---|
 | Chronos | 95.6% | n/r |
-| Mem0 (self-reported) | 94.4% | n/r |
+| Mem0 (Apr 2026 algorithm) | 94.4% | 6.8K |
 | Honcho | 90.4% | n/r |
-| **livemem** | **87.8%** | **4.2k tok** |
+| **livemem** | **87.8%** | **4.2K** |
 | Supermemory (Gemini-3) | 85.2% | n/r |
 | Zep | 71.2% | n/r |
 | Mem0 (third-party eval) | 67.6% | n/r |
 | Full-context GPT-4o | 60.2% | full history |
+
+We are 6.6 points behind Mem0 here, at 62% of their context. Closing that gap on equal
+tokens is the work we're publishing next.
 
 All ~30 published rows with source links: [`bench/README.md`](bench/README.md).
 

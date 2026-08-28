@@ -37,7 +37,8 @@ AMB's `external_results.json`; they are cited, not reproduced here.
 
 | System | Acc. | Answerer / judge | Source |
 |---|---|---|---|
-| **livemem** (single pass) | **92.4%** | gemini-flash / claude-haiku-4-5 | [`results/`](results/locomo-1540q/single-pass/) |
+| Mem0 (Apr 2026 algorithm) | 92.5% @ 7.0K tok | per repo | [mem0ai/mem0](https://github.com/mem0ai/mem0) |
+| **livemem** (single pass) | **92.4%** @ 5.0K tok | gemini-flash / claude-haiku-4-5 | [`results/`](results/locomo-1540q/single-pass/) |
 | MemMachine v0.2 | 91.7% | gpt-4.1-mini | [MemMachine blog, Dec 2025](https://memmachine.ai/blog/2025/12/memmachine-v0.2-delivers-top-scores-and-efficiency-on-locomo-benchmark/) |
 | Honcho | 89.9% | per blog | [Plastic Labs](https://blog.plasticlabs.ai/research/Benchmarking-Honcho) |
 | MemMachine | 84.9% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
@@ -48,16 +49,17 @@ AMB's `external_results.json`; they are cited, not reproduced here.
 | LangMem | 58.1% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
 | OpenAI memory | 52.9% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
 
-Our answerer (gemini-flash) differs from MemMachine's (gpt-4.1-mini), and the control
-below shows that alone is worth several points — read the 0.7-point gap as "comparable",
-not as a win.
+Mem0's April 2026 algorithm is 0.1 above us at 7.0K context tokens versus our 5.0K. Our
+answerer (gemini-flash) also differs from the other rows', and the control below shows
+that alone is worth several points — so read any gap of this size as "comparable", not as
+a ranking.
 
 ### LongMemEval_S
 
 | System | Acc. | Answerer / judge | Source |
 |---|---|---|---|
 | Chronos | 95.6% | per paper | [arXiv:2603.16862](https://arxiv.org/abs/2603.16862) |
-| Mem0 (self-reported) | 94.4% | gpt-5 / gpt-5 | [Mem0 memory-benchmarks](https://github.com/mem0ai/memory-benchmarks) |
+| Mem0 (Apr 2026 algorithm) | 94.4% @ 6.8K tok | per repo | [mem0ai/mem0](https://github.com/mem0ai/mem0) |
 | Mastra | 92.8% | per paper | [Chronos, arXiv:2603.16862](https://arxiv.org/abs/2603.16862) |
 | Honcho | 90.4% | per blog | [Plastic Labs](https://blog.plasticlabs.ai/research/Benchmarking-Honcho) |
 | SmartSearch | 88.4% | per paper | [arXiv:2603.15599](https://arxiv.org/abs/2603.15599) |
