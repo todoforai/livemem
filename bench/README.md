@@ -26,6 +26,63 @@ export LIVEMEM_HTTP_URL=https://api.todofor.ai LIVEMEM_HTTP_KEY=<your key>
 uv run amb run --dataset longmemeval --split s --memory livemem-http
 ```
 
+## Leaderboards
+
+Published results from papers and vendor blogs, plus ours. **These are not one
+apples-to-apples leaderboard** — each row carries its own harness, answerer, judge and
+token budget, and those are worth several points each. External sources as collected by
+AMB's `external_results.json`; they are cited, not reproduced here.
+
+### LoCoMo
+
+| System | Acc. | Answerer / judge | Source |
+|---|---|---|---|
+| **livemem** (single pass) | **92.4%** | gemini-flash / claude-haiku-4-5 | [`results/`](results/locomo-1540q/single-pass/) |
+| MemMachine v0.2 | 91.7% | gpt-4.1-mini | [MemMachine blog, Dec 2025](https://memmachine.ai/blog/2025/12/memmachine-v0.2-delivers-top-scores-and-efficiency-on-locomo-benchmark/) |
+| Honcho | 89.9% | per blog | [Plastic Labs](https://blog.plasticlabs.ai/research/Benchmarking-Honcho) |
+| MemMachine | 84.9% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
+| Mem0 (gpt-4.1-mini) | 80.0% | gpt-4.1-mini | [MemMachine blog, Dec 2025](https://memmachine.ai/blog/2025/12/memmachine-v0.2-delivers-top-scores-and-efficiency-on-locomo-benchmark/) |
+| Memobase / Zep | 75.8 / 75.1% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
+| Letta | 74.0% | per blog | [Letta blog](https://www.letta.com/blog/benchmarking-ai-agent-memory) |
+| Mem0 | 66.9% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
+| LangMem | 58.1% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
+| OpenAI memory | 52.9% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
+
+Our answerer (gemini-flash) differs from MemMachine's (gpt-4.1-mini), and the control
+below shows that alone is worth several points — read the 0.7-point gap as "comparable",
+not as a win.
+
+### LongMemEval_S
+
+| System | Acc. | Answerer / judge | Source |
+|---|---|---|---|
+| Chronos | 95.6% | per paper | [arXiv:2603.16862](https://arxiv.org/abs/2603.16862) |
+| Mem0 (self-reported) | 94.4% | gpt-5 / gpt-5 | [Mem0 memory-benchmarks](https://github.com/mem0ai/memory-benchmarks) |
+| Mastra | 92.8% | per paper | [Chronos, arXiv:2603.16862](https://arxiv.org/abs/2603.16862) |
+| Honcho | 90.4% | per blog | [Plastic Labs](https://blog.plasticlabs.ai/research/Benchmarking-Honcho) |
+| SmartSearch | 88.4% | per paper | [arXiv:2603.15599](https://arxiv.org/abs/2603.15599) |
+| **livemem** | **87.8%** @ 4.2k tok | flash-lite / flash-lite | [`results/`](results/longmemeval-s500/single-pass/) |
+| Memora | 87.4% | per paper | [arXiv:2602.03315](https://arxiv.org/abs/2602.03315) |
+| Supermemory (Gemini-3) | 85.2% | per paper | [Hindsight, arXiv:2512.12818](https://arxiv.org/abs/2512.12818) |
+| EMem-G | 84.9% | per paper | [arXiv:2511.17208](https://arxiv.org/abs/2511.17208) |
+| EverMemOS | 83.0% | per paper | [SmartSearch, arXiv:2603.15599](https://arxiv.org/abs/2603.15599) |
+| **livemem hosted API today** (s94) | **81.9%** @ 5.7k tok | flash-lite / flash-lite | [`results/`](results/longmemeval-s94/hosted-http/) |
+| Supermemory | 81.6% | per paper | [Hindsight, arXiv:2512.12818](https://arxiv.org/abs/2512.12818) |
+| TiMem | 79.0% | per paper | [arXiv:2601.02845](https://arxiv.org/abs/2601.02845) |
+| CoM | 76.4% | per paper | [arXiv:2601.14287](https://arxiv.org/abs/2601.14287) |
+| Nemori / LiCoMemory / MemOS | 74.6 / 73.8 / 73.1% | per paper | [Nemori](https://arxiv.org/abs/2508.03341), [LiCoMemory](https://arxiv.org/abs/2511.01448), [TiMem](https://arxiv.org/abs/2601.02845) |
+| ENGRAM / Zep | 71.4 / 71.2% | per paper | [ENGRAM](https://arxiv.org/abs/2511.12960), [Zep](https://arxiv.org/abs/2501.13956) |
+| Mem0 (third-party eval) | 67.6% | per paper | [TiMem, arXiv:2601.02845](https://arxiv.org/abs/2601.02845) |
+| Full-context GPT-4o | 60.2% | gpt-4o | [LongMemEval, arXiv:2410.10813](https://arxiv.org/abs/2410.10813) |
+| **bm25 @5k** (our control) | 58.6% | flash-lite / flash-lite | [`results/`](results/longmemeval-s500/baseline-bm25-5k/) |
+| MemoryBank | 22.9% | per paper | [TiMem, arXiv:2601.02845](https://arxiv.org/abs/2601.02845) |
+
+Note the two Mem0 rows: **94.4% self-reported, 67.6% in a third-party paper.** Same
+system, 27 points apart. That spread is the whole problem with reading these as a ranking.
+
+Context size is the other hidden axis: we run at ~4–5k tokens per question, measured after
+rendering; the AMB leaderboard's Hindsight run reports 43.6k — ~9× more.
+
 ## Published results
 
 `results/` holds per-question artifacts for **our** rows: answers, judge verdicts and
