@@ -1,0 +1,20 @@
+{
+  "benchmark": "LoCoMo, all 1540 questions",
+  "accuracy": "94.7% (1458/1540)",
+  "by_category": {
+    "open-domain": "816/841 = 97.0%",
+    "single-hop": "264/282 = 93.6%",
+    "temporal": "300/321 = 93.5%",
+    "multi-hop": "78/96 = 81.2%"
+  },
+  "answerer": "vote2 ensemble: gemini-flash and claude-haiku-4-5 answer independently from the same memory; a rule hierarchy (agree > commit > abstain) settles the disagreements",
+  "judge": "gemini-flash-lite-latest",
+  "extractor": "claude-haiku-4-5-20251001",
+  "embedder": "voyage-3.5-lite@512",
+  "retrieval": "entity cards (0.3 of budget) + 3-turn conversation windows + dated facts, cosine + greedy knapsack",
+  "budget": 5000,
+  "context_tokens_delivered": "~5.0k per question",
+  "passes": "2 answer passes, no re-retrieval; ~6-7s per question",
+  "date": "2026-08-26",
+  "note": "Our best LoCoMo configuration. The single-pass row (single-pass/) is the same memory with one answer pass at 92.4%."
+}

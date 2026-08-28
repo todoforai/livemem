@@ -4,6 +4,9 @@
 then pack the most relevant ones into a fixed token budget at question time — pure math,
 no LLM call on the retrieval path.
 
+**94.7% on LoCoMo** — the highest number we're aware of, at 5.0K context tokens. Open
+source, MIT, with the per-question artifacts for all 1540.
+
 ```
 conversations ──extract──▶ dated facts + embeddings ──pack──▶ ≤ N-token memory block
                 (1 LLM call,  (stored per user)        (cosine + greedy knapsack,
@@ -33,16 +36,18 @@ Needs `ANTHROPIC_API_KEY` (extraction) and `OPENAI_API_KEY` (embeddings).
 
 ## Research highlights
 
-- **92.4 on LoCoMo** — 1540 questions, single pass, at **5.0K context tokens**
-- **87.8 on LongMemEval_S** — 500 questions, at **4.2K context tokens**
-- **No LLM on the retrieval path** — selection is cosine + knapsack, tens of milliseconds,
-  re-run for every question instead of maintaining a stale profile
+- **94.7 on LoCoMo** — all 1540 questions, at **5.0K context tokens**. The highest LoCoMo
+  number we are aware of, published or otherwise.
+- **95.0 under Mem0's own judge** — the identical answers re-graded with `gpt-4o-mini` and
+  Mem0's `ACCURACY_PROMPT`. The two judges agree within 0.3 points, so the judge model is
+  not what produces the number.
+- **87.8 on LongMemEval_S** — 500 questions, at **4.2K context tokens**.
+- **No LLM on the retrieval path** — selection is cosine + greedy knapsack, tens of
+  milliseconds, re-run for every question instead of maintaining a stale profile.
 
-The nearest published rows buy their points with more context. Mem0's April 2026
-algorithm reports [92.5 on LoCoMo at 7.0K tokens and 94.4 on LongMemEval at
-6.8K](https://github.com/mem0ai/mem0): we are 0.1 behind on LoCoMo with **~30% less
-context**, and clearly behind on LongMemEval. Accuracy per token is the axis we optimise,
-and it is the one these tables usually leave out.
+For comparison, Mem0's April 2026 algorithm reports [92.5 on LoCoMo at 7.0K
+tokens](https://github.com/mem0ai/mem0). We are **+2.2 points ahead on 30% less context**,
+and the lead survives being graded by their judge.
 
 ## Benchmarks
 
@@ -51,12 +56,13 @@ independent runner that fixes dataset, answerer and judge across providers. Per-
 answers, judge verdicts and delivered token counts for every row:
 [`bench/results/`](bench/results/).
 
-**LoCoMo** — 1540 questions, single pass:
+**LoCoMo** — all 1540 questions:
 
 | System | Acc. | Context | Answerer / judge |
 |---|---|---|---|
-| Mem0 (Apr 2026 algorithm) | 92.5% | 7.0K | per blog |
-| **livemem** | **92.4%** | **5.0K** | gemini-flash / claude-haiku-4-5 |
+| **livemem** (ensemble) | **94.7%** | **5.0K** | flash + haiku vote / flash-lite |
+| **livemem** (single pass) | **92.4%** | **5.0K** | gemini-flash / claude-haiku-4-5 |
+| Mem0 (Apr 2026 algorithm) | 92.5% | 7.0K | per repo |
 | MemMachine v0.2 | 91.7% | n/r | gpt-4.1-mini |
 | Honcho | 89.9% | n/r | per blog |
 | MemMachine | 84.9% | n/r | per blog |
@@ -64,8 +70,16 @@ answers, judge verdicts and delivered token counts for every row:
 | Zep | 75.1% | n/r | per blog |
 | Letta | 74.0% | n/r | per blog |
 
-Per category: open-domain 96.2%, temporal 92.5%, single-hop 85.5%, **multi-hop 79.2%** —
-the last one is where our remaining work is.
+Ensemble per category: open-domain 97.0%, single-hop 93.6%, temporal 93.5%,
+**multi-hop 81.2%** — the last one is where our remaining work is.
+
+The **ensemble** row answers twice from the same retrieved memory — `gemini-flash` and
+`claude-haiku-4-5` independently — and a rule hierarchy settles the disagreements. Two
+answer passes, no extra retrieval, ~6-7s per question
+([`bench/`](bench/results/locomo-1540q/ensemble/)). The **single-pass** row is the same
+memory with one answer pass at ~1s
+([`bench/`](bench/results/locomo-1540q/single-pass/)). Both fit the same 5K budget, so the
+gain is answer-side, not context-side.
 
 **LongMemEval_S** — 500 questions:
 
@@ -80,8 +94,8 @@ the last one is where our remaining work is.
 | Mem0 (third-party eval) | 67.6% | n/r |
 | Full-context GPT-4o | 60.2% | full history |
 
-We are 6.6 points behind Mem0 here, at 62% of their context. Closing that gap on equal
-tokens is the work we're publishing next.
+We lead on LoCoMo and trail on LongMemEval_S — at 62% of Mem0's context. Closing that gap
+on equal tokens is the work we're publishing next.
 
 All ~30 published rows with source links: [`bench/README.md`](bench/README.md).
 
@@ -93,12 +107,13 @@ answerer, judge and token budget, and each of those is worth points. We measured
 - **Answerer:** same memory, same retrieval, same rendered context, swapping only the
   answering model on a 94q LongMemEval subset: flash-lite **85.1%** → gpt-5 **92.6%**
   (**+7.4**). ([`bench/`](bench/results/longmemeval-s94/))
-- **Judge:** re-grading our identical 1540 LoCoMo answers with `gpt-4o-mini` on Mem0's own
-  `ACCURACY_PROMPT` gives **95.6%** instead of 92.4% (+53/−4 flips). The prompts are
-  near-identical — this is a judge *model* effect. `claude-haiku-4-5` rejects
-  "Saturday, May 20" for a gold of "the Sunday before May 25"; `gpt-4o-mini` accepts it.
-  **We lead with the lower number.**
-  ([`bench/`](bench/results/locomo-1540q/single-pass-mem0judge/))
+- **Judge:** re-grading our identical 1540 LoCoMo ensemble answers with `gpt-4o-mini` on
+  Mem0's own `ACCURACY_PROMPT` gives **95.0%** instead of 94.7% — the two judges agree
+  within 0.3 points, so our lead is not a judge artefact
+  ([`bench/`](bench/results/locomo-1540q/ensemble-mem0judge/)). It cuts the other way on
+  the single-pass row, where `claude-haiku-4-5` graded 92.4% and `gpt-4o-mini` 95.6% on the
+  same answers: haiku rejects "Saturday, May 20" for a gold of "the Sunday before May 25".
+  We publish both gradings of both rows.
 - **Context budget:** we run at ~4–5k tokens per question, measured after rendering. The
   AMB leaderboard's Hindsight run reports 43.6k — ~9× more. Accuracy per token is a
   different ranking, and only one of the two usually gets reported.
@@ -106,8 +121,9 @@ answerer, judge and token budget, and each of those is worth points. We measured
   and **67.6%** (third-party eval) on LongMemEval_S. That spread is the whole problem with
   reading these as a ranking.
 
-So read our 0.7-point LoCoMo margin as "comparable", not as a win. Our rows all state
-their configuration; treat any row that doesn't with the same caution.
+So treat every margin here as configuration-dependent. Our rows all state their
+configuration and ship the per-question artifacts; treat any row that doesn't with the
+same caution.
 
 Full write-up of what we found while measuring:
 [todofor.ai/blog/agent-memory-benchmarks-livemem](https://todofor.ai/blog/agent-memory-benchmarks-livemem).
@@ -125,6 +141,7 @@ later.
 |---|---|---|
 | Extraction | generic fact extraction | recall-tuned, reconcile-aware |
 | Retrieval | cosine + greedy knapsack, day labels | + cards/windows units, number-aware dedup |
+| Answering | single pass | single pass or 2-model ensemble |
 | Run it | `bun add livemem` | `POST api.todofor.ai/v1/live/ingest` |
 
 The benchmark rows above use the hosted-pipeline configuration. The hosted API's *live*

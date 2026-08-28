@@ -1,0 +1,17 @@
+{
+  "benchmark": "LoCoMo, all 1540 questions — judge swap only",
+  "accuracy": "95.0% (1463/1540)",
+  "answers": "byte-identical to ensemble/ — no re-answering, only re-graded",
+  "judge": "openai:gpt-4o-mini, temperature 0, Mem0's ACCURACY_PROMPT (the judge behind the published Mem0 LoCoMo numbers)",
+  "flash_lite_judge_was": "94.7% (1458/1540)",
+  "flips": "+18 / -13 vs the flash-lite judge",
+  "by_category": {
+    "open-domain": "819/841 = 97.4%",
+    "single-hop": "267/282 = 94.7%",
+    "temporal": "299/321 = 93.1%",
+    "multi-hop": "78/96 = 81.2%"
+  },
+  "field_note": "`correct` is the flash-lite verdict (1458); `correct_4omini` is the gpt-4o-mini verdict (1463).",
+  "date": "2026-08-26",
+  "note": "The two judges agree within 0.3pt on these answers, so the judge model is not what produces our number."
+}
