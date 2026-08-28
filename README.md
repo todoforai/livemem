@@ -33,21 +33,40 @@ Needs `ANTHROPIC_API_KEY` (extraction) and `OPENAI_API_KEY` (embeddings).
 
 ## Benchmarks
 
-Run on the [AMB harness](https://github.com/vectorize-io/agent-memory-benchmark), an
+Run on the OSS [AMB harness](https://github.com/vectorize-io/agent-memory-benchmark), an
 independent runner that fixes dataset, answerer and judge across providers. Per-question
 answers, judge verdicts and delivered token counts for every row:
 [`bench/results/`](bench/results/).
 
-| Benchmark | livemem | Context | Best published number we found |
-|---|---|---|---|
-| **LoCoMo** (1540q, single pass) | **92.4%** | ~5k tok | MemMachine v0.2, 91.7% |
-| **LongMemEval_S** (500q) | **87.8%** | 4.2k tok | Chronos, 95.6% |
+**LoCoMo** — 1540 questions, single pass, ~5k context tokens:
 
-LoCoMo per category: open-domain 96.2%, temporal 92.5%, single-hop 85.5%,
-**multi-hop 79.2%** — the last one is where our remaining work is.
+| System | Acc. | Answerer / judge |
+|---|---|---|
+| **livemem** | **92.4%** | gemini-flash / claude-haiku-4-5 |
+| MemMachine v0.2 | 91.7% | gpt-4.1-mini |
+| Honcho | 89.9% | per blog |
+| MemMachine | 84.9% | per blog |
+| Mem0 (gpt-4.1-mini) | 80.0% | gpt-4.1-mini |
+| Zep | 75.1% | per blog |
+| Letta | 74.0% | per blog |
 
-Full leaderboards with every published system and source link:
-[`bench/README.md`](bench/README.md).
+Per category: open-domain 96.2%, temporal 92.5%, single-hop 85.5%, **multi-hop 79.2%** —
+the last one is where our remaining work is.
+
+**LongMemEval_S** — 500 questions, at 4.2k context tokens per question:
+
+| System | Acc. | Context |
+|---|---|---|
+| Chronos | 95.6% | n/r |
+| Mem0 (self-reported) | 94.4% | n/r |
+| Honcho | 90.4% | n/r |
+| **livemem** | **87.8%** | **4.2k tok** |
+| Supermemory (Gemini-3) | 85.2% | n/r |
+| Zep | 71.2% | n/r |
+| Mem0 (third-party eval) | 67.6% | n/r |
+| Full-context GPT-4o | 60.2% | full history |
+
+All ~30 published rows with source links: [`bench/README.md`](bench/README.md).
 
 ### Read these numbers carefully
 
