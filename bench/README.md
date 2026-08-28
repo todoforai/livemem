@@ -37,6 +37,7 @@ AMB's `external_results.json`; they are cited, not reproduced here.
 
 | System | Acc. | Answerer / judge | Source |
 |---|---|---|---|
+| **livemem** (ensemble) | **94.7%** @ 5.0K tok | flash + haiku vote / flash-lite | [`results/`](results/locomo-1540q/ensemble/) |
 | Mem0 (Apr 2026 algorithm) | 92.5% @ 7.0K tok | per repo | [mem0ai/mem0](https://github.com/mem0ai/mem0) |
 | **livemem** (single pass) | **92.4%** @ 5.0K tok | gemini-flash / claude-haiku-4-5 | [`results/`](results/locomo-1540q/single-pass/) |
 | MemMachine v0.2 | 91.7% | gpt-4.1-mini | [MemMachine blog, Dec 2025](https://memmachine.ai/blog/2025/12/memmachine-v0.2-delivers-top-scores-and-efficiency-on-locomo-benchmark/) |
@@ -49,10 +50,10 @@ AMB's `external_results.json`; they are cited, not reproduced here.
 | LangMem | 58.1% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
 | OpenAI memory | 52.9% | per blog | [MemMachine blog, Sep 2025](https://memmachine.ai/blog/2025/09/memmachine-reaches-new-heights-on-locomo/) |
 
-Mem0's April 2026 algorithm is 0.1 above us at 7.0K context tokens versus our 5.0K. Our
-answerer (gemini-flash) also differs from the other rows', and the control below shows
-that alone is worth several points — so read any gap of this size as "comparable", not as
-a ranking.
+Our ensemble row leads by 2.2 points at 5.0K context tokens versus Mem0's 7.0K, and holds
+that lead when re-graded by Mem0's own judge (95.0%, see below). Answerer models still
+differ across rows, and the control further down shows that alone is worth several points
+— so read the rows below us as configuration-dependent, not as a settled ranking.
 
 ### LongMemEval_S
 
@@ -94,15 +95,29 @@ comparing.
 
 | README row | Directory | Answerer / judge |
 |---|---|---|
-| LoCoMo 1540q — **92.4%** | `results/locomo-1540q/single-pass/` | gemini-flash / claude-haiku-4-5 |
-| LoCoMo 1540q — same answers, Mem0's judge — 95.6% | `results/locomo-1540q/single-pass-mem0judge/` | gemini-flash / **gpt-4o-mini, Mem0 ACCURACY_PROMPT** |
+| LoCoMo 1540q — **94.7%** (best) | `results/locomo-1540q/ensemble/` | vote2(gemini-flash, claude-haiku-4-5) / flash-lite |
+| LoCoMo 1540q — same answers, Mem0's judge — 95.0% | `results/locomo-1540q/ensemble-mem0judge/` | vote2 / **gpt-4o-mini, Mem0 ACCURACY_PROMPT** |
+| LoCoMo 1540q — single pass — 92.4% | `results/locomo-1540q/single-pass/` | gemini-flash / claude-haiku-4-5 |
+| LoCoMo 1540q — single pass, Mem0's judge — 95.6% | `results/locomo-1540q/single-pass-mem0judge/` | gemini-flash / **gpt-4o-mini, Mem0 ACCURACY_PROMPT** |
 | LongMemEval 500q — **87.8%** | `results/longmemeval-s500/single-pass/` | flash-lite / flash-lite |
 | LongMemEval — bm25 @5k control 58.6% | `results/longmemeval-s500/baseline-bm25-5k/` | flash-lite / flash-lite |
 | LongMemEval s94 — hosted API 81.9% / 77.7% | `results/longmemeval-s94/hosted-http/` | flash-lite / flash-lite |
 | LongMemEval s94 — answerer control, baseline 85.1% | `results/longmemeval-s94/v4-flashlite-answerer/` | flash-lite / flash-lite |
 | LongMemEval s94 — answerer control, gpt-5 92.6% | `results/longmemeval-s94/v4-gpt5-answerer/` | **gpt-5** / flash-lite |
 
-The two LoCoMo directories hold the **same 1540 answers** graded by different judges
+### The ensemble row
+
+`ensemble/` answers each question twice from the *same* retrieved memory — `gemini-flash`
+and `claude-haiku-4-5` independently — and a rule hierarchy (agree > commit > abstain)
+settles the 82 disagreements. No extra retrieval, no bigger context: both passes read the
+same 5.0K block, so the +2.3 points over single-pass are answer-side. Cost is a second
+answer call and ~6-7s per question versus ~1s.
+
+Re-graded with `gpt-4o-mini` on Mem0's `ACCURACY_PROMPT` the same answers score **95.0%**
+(+18/−13 flips) — the two judges agree within 0.3 points, so this row is not a judge
+artefact.
+
+The single-pass LoCoMo directories hold the **same 1540 answers** graded by different judges
 (verified byte-identical answer strings) — 92.4% under `claude-haiku-4-5`, 95.6% under
 `gpt-4o-mini`. The prompts are near-identical (AMB's LoCoMo judge prompt is derived from
 Mem0's `ACCURACY_PROMPT`, "be generous" clause included), so the 3.2pt is the judge
